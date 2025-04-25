@@ -1,0 +1,13 @@
+{
+  "main": ".open-next/worker.js",
+  "name": "opendots_alphav1",
+  "compatibility_date": "2025-03-01",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  }
+  
+}
