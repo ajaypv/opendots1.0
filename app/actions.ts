@@ -116,3 +116,112 @@ export const signOutAction = async () => {
   // Our middleware will detect this parameter and clear all auth cookies
   return redirect("/?signout=true");
 };
+
+// Profile update action
+interface ProfileUpdateData {
+  displayName: string;
+  username: string;
+  age: number | null;
+  gender: string;
+  profileImage: File | null;
+}
+
+export async function updateUserProfileAction(data: ProfileUpdateData) {
+  const supabase = await createClient();
+  
+  try {
+    // Get the current user
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) {
+      return { success: false, message: "Not authenticated" };
+    }
+    
+    // Check if username is already taken
+    const { data: existingUsers, error: usernameCheckError } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('username', data.username)
+      .neq('id', user.id)
+      .limit(1);
+      
+    if (usernameCheckError) {
+      console.error("Error checking username:", usernameCheckError);
+      return { success: false, message: "Error checking username availability" };
+    }
+    
+    if (existingUsers && existingUsers.length > 0) {
+      return { success: false, message: "Username is already taken" };
+    }
+    
+    // Prepare update data
+    const updateData: Record<string, any> = {
+      full_name: data.displayName,
+      username: data.username,
+      age: data.age,
+      gender: data.gender,
+      updated_at: new Date().toISOString()
+    };
+    
+    // Handle profile image upload if provided
+    if (data.profileImage) {
+      try {
+        // Upload the image using our API endpoint
+        const formData = new FormData();
+        formData.append('file', data.profileImage);
+        
+        // Use the API endpoint to upload the image
+        const uploadResponse = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData
+        });
+        
+        if (!uploadResponse.ok) {
+          const errorJson = await uploadResponse.json();
+          throw new Error(errorJson.error || 'Failed to upload image');
+        }
+        
+        const uploadResult = await uploadResponse.json();
+        
+        if (uploadResult.success) {
+          // Add the image URL to the update data
+          updateData.avatar_url = uploadResult.url;
+        } else {
+          throw new Error('Failed to upload profile image');
+        }
+      } catch (uploadError) {
+        console.error("Error uploading image:", uploadError);
+        return { success: false, message: "Failed to upload profile image" };
+      }
+    }
+    
+    // Update the profile in database
+    const { error: updateError } = await supabase
+      .from('profiles')
+      .update(updateData)
+      .eq('id', user.id);
+      
+    if (updateError) {
+      console.error("Error updating profile:", updateError);
+      return { success: false, message: "Failed to update profile" };
+    }
+    
+    // Also update user metadata
+    await supabase.auth.updateUser({
+      data: {
+        full_name: data.displayName,
+        username: data.username,
+        avatar_url: updateData.avatar_url,
+        onboarded: true
+      }
+    });
+    
+    // Success
+    revalidatePath('/protected');
+    return { success: true };
+    
+  } catch (err) {
+    console.error("Unexpected error updating profile:", err);
+    return { success: false, message: "An unexpected error occurred" };
+  }
+}

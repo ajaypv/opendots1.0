@@ -31,9 +31,33 @@ export async function GET(request: Request) {
       return NextResponse.redirect(`${origin}/?error=true&message=${encodeURIComponent(error.message)}&type=error`);
     }
 
-    // After successful authentication, update user profile with client information
+    // Check if this is a new user by checking created_at vs updated_at timestamps
+    // If they're very close, it's likely a new user
+    let isNewUser = false;
+    let redirectPath = next;
+    
     if (data?.user) {
       try {
+        // Get user profile
+        const { data: profileData, error: profileError } = await supabase
+          .from('profiles')
+          .select('username, full_name')
+          .eq('id', data.user.id)
+          .single();
+          
+        // Check if profile data is incomplete (new user or not onboarded)
+        if (!profileError && (!profileData.username || !profileData.full_name)) {
+          isNewUser = true;
+          redirectPath = '/onboarding';
+        }
+        
+        // Check user metadata for onboarding status
+        const userMetadata = data.user.user_metadata;
+        if (!userMetadata.onboarded) {
+          isNewUser = true;
+          redirectPath = '/onboarding';
+        }
+        
         // Use the user info from URL parameters
         const userInfo = {
           platform: platform || 'unknown',
@@ -42,7 +66,7 @@ export async function GET(request: Request) {
         };
 
         // Update the profile with device information using our secure function
-        const { data: profileResult, error: profileError } = await supabase.rpc(
+        const { data: profileResult, error: profileError2 } = await supabase.rpc(
           'update_user_profile_metadata',
           {
             user_id: data.user.id,
@@ -52,8 +76,8 @@ export async function GET(request: Request) {
           }
         );
 
-        if (profileError) {
-          console.error("Error updating profile:", profileError.message);
+        if (profileError2) {
+          console.error("Error updating profile:", profileError2.message);
         } else {
           console.log("Profile updated successfully");
         }
@@ -79,13 +103,13 @@ export async function GET(request: Request) {
     let redirectUrl;
     if (isLocalEnv) {
       // Local development - use origin directly
-      redirectUrl = `${origin}${next}`;
+      redirectUrl = `${origin}${redirectPath}`;
     } else if (forwardedHost) {
       // Production with load balancer - use forwarded host
-      redirectUrl = `https://${forwardedHost}${next}`;
+      redirectUrl = `https://${forwardedHost}${redirectPath}`;
     } else {
       // Production without load balancer
-      redirectUrl = `${origin}${next}`;
+      redirectUrl = `${origin}${redirectPath}`;
     }
 
     return NextResponse.redirect(redirectUrl);

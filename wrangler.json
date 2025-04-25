@@ -8,6 +8,31 @@
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS"
-  }
-  
+  },
+  "r2_buckets": [
+    {
+      "binding": "PROFILE_IMAGES",
+      "bucket_name": "profile-images",
+      "preview_bucket_name": "profile-images-dev"
+    }
+  ],
+  "workers": [
+    {
+      "name": "image-worker",
+      "main": "functions/image-worker.js",
+      "routes": [
+        {
+          "pattern": "images/*",
+          "custom_domain": false
+        }
+      ],
+      "bindings": [
+        {
+          "name": "PROFILE_IMAGES",
+          "type": "r2_bucket",
+          "bucket_name": "profile-images"
+        }
+      ]
+    }
+  ]
 }
