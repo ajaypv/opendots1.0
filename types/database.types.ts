@@ -21,9 +21,6 @@ export interface Database {
           location: string | null
           platform: string | null
           browser: string | null
-          username: string | null
-          age: number | null
-          gender: string | null
         }
         Insert: {
           id: string
@@ -36,9 +33,6 @@ export interface Database {
           location?: string | null
           platform?: string | null
           browser?: string | null
-          username?: string | null
-          age?: number | null
-          gender?: string | null
         }
         Update: {
           id?: string
@@ -51,9 +45,6 @@ export interface Database {
           location?: string | null
           platform?: string | null
           browser?: string | null
-          username?: string | null
-          age?: number | null
-          gender?: string | null
         }
       }
       // Add other tables as needed

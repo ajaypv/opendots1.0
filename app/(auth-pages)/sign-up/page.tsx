@@ -3,7 +3,6 @@ import { GoogleAuthButton } from "@/components/google-auth-button";
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import Link from "next/link";
-import { authProviders } from "@/lib/auth/providers";
 
 export default async function SignUp(props: { searchParams: Promise<Message> }) {
   // Check if user is already authenticated
@@ -35,34 +34,10 @@ export default async function SignUp(props: { searchParams: Promise<Message> }) 
       </p>
       <div className="flex flex-col gap-4 mt-8">
         <p className="text-center text-muted-foreground">
-          Create an account using your preferred provider
+          Create an account using your Google account
         </p>
         
-        <div className="space-y-3">
-          {Object.values(authProviders).map(provider => (
-            <form 
-              key={provider.id} 
-              action={async () => await provider.signIn()}
-              className="w-full"
-            >
-              <button
-                className="flex items-center justify-center w-full px-4 py-2 space-x-2 text-sm border rounded-md"
-                style={{
-                  backgroundColor: provider.background,
-                  color: provider.textColor,
-                  borderColor: '#e2e8f0'
-                }}
-              >
-                {provider.icon}
-                <span>Continue with {provider.name}</span>
-              </button>
-            </form>
-          ))}
-        </div>
-        
-        <div className="mt-4 text-sm text-center text-muted-foreground">
-          After sign-up, you'll be taken to an onboarding page to complete your profile.
-        </div>
+        <GoogleAuthButton />
         
         <FormMessage message={searchParams} />
       </div>
