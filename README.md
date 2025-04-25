@@ -1,3 +1,101 @@
+# OpenDots - Secure Authentication System
+
+This project demonstrates a secure authentication system using Next.js and Supabase. It includes features for Google OAuth authentication with enhanced security and user data collection.
+
+## Security Features
+
+- **Secure User Profiles**: User data is stored in a separate profiles table with row-level security
+- **OAuth Integration**: Google authentication with proper scope handling
+- **Device Information Tracking**: Captures platform, browser, and location information
+- **Session Management**: Secure cookie handling with HTTP-only and secure flags
+- **Security Headers**: Implements best practice security headers in middleware
+- **Database Triggers**: Automatic profile creation on user signup
+- **Data Validation**: Server-side validation of user data
+- **RLS Policies**: Row-level security ensures users can only access their own data
+
+## Setting Up Authentication
+
+1. Configure your Supabase project with the necessary environment variables:
+   ```
+   NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+   ```
+
+2. Set up Google OAuth:
+   - Create a Google Cloud project
+   - Configure OAuth consent screen
+   - Create OAuth credentials
+   - Add authorized redirect URIs: `https://your-domain.com/auth/callback`
+   - Configure Supabase Auth settings with your Google client ID and secret
+
+3. Run migrations to set up the database:
+   - The migrations will create the profiles table
+   - Set up triggers for automatic profile creation
+   - Configure row-level security policies
+
+## Database Schema
+
+The profile schema includes:
+- `id`: UUID (linked to auth.users)
+- `email`: User's email
+- `full_name`: User's full name
+- `avatar_url`: URL to user's avatar
+- `provider`: Authentication provider (e.g., 'google')
+- `location`: User's location
+- `platform`: Device platform (Desktop/Mobile)
+- `browser`: Browser information
+- `created_at`: Timestamp of profile creation
+- `updated_at`: Timestamp of last update
+
+## Authentication Flow
+
+1. User clicks "Sign in with Google" 
+2. Client collects device information
+3. Server initiates OAuth flow with Supabase
+4. User authenticates with Google
+5. Google redirects back with authentication code
+6. Server exchanges code for session
+7. Profile is created or updated with device information
+8. User is redirected to protected page
+
+## Best Practices
+
+1. **Middleware Security**:
+   - HTTP-only cookies
+   - Secure flags in production
+   - Security headers
+
+2. **Database Security**:
+   - Row-level security
+   - Secure functions with SECURITY DEFINER
+   - Principle of least privilege
+
+3. **User Data Protection**:
+   - Minimal data collection
+   - Secure storage
+   - Clear logout process
+
+## Development
+
+```bash
+# Install dependencies
+npm install
+
+# Run development server
+npm run dev
+
+# Run database migrations
+npx supabase migration up
+```
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+This project is open source and available under the [MIT License](LICENSE).
+
 <a href="https://demo-nextjs-with-supabase.vercel.app/">
   <img alt="Next.js and Supabase Starter Kit - the fastest way to build apps with Next.js and Supabase" src="https://demo-nextjs-with-supabase.vercel.app/opengraph-image.png">
   <h1 align="center">Next.js and Supabase Starter Kit</h1>
