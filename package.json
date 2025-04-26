@@ -4,7 +4,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "deploy": "opennextjs-cloudflare build && wrangler deploy"
+    "deploy": "opennextjs-cloudflare build && wrangler deploy",
+    "d1:create": "wrangler d1 create user_profiles",
+    "d1:migrate:local": "node scripts/migrate-d1.js --local",
+    "d1:migrate:remote": "node scripts/migrate-d1.js",
+    "d1:studio": "wrangler d1 execute user_profiles --local --command \"SELECT name FROM sqlite_master WHERE type='table';\""
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.0.4",

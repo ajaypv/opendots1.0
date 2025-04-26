@@ -1,6 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { RequireOnboarding, OnboardingDataDisplay } from "../onboarding/components/OnboardingStatus";
+import { D1Status } from "../onboarding/components/D1Status";
 import Link from "next/link";
 
 export default async function ProtectedPage() {
@@ -8,12 +9,12 @@ export default async function ProtectedPage() {
   
   // Get the session
   const { data: { session } } = await supabase.auth.getSession();
-  
+
   // Redirect to login if no session
   if (!session) {
     return redirect("/auth/login?next=/protected");
   }
-  
+
   return (
     <div className="flex flex-col min-h-screen">
       <main className="flex-1 container mx-auto px-4 py-8">
@@ -36,9 +37,14 @@ export default async function ProtectedPage() {
           </RequireOnboarding>
         </div>
         
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white rounded-lg shadow p-6 mb-6">
           <h2 className="text-xl font-semibold mb-4">Protected Content</h2>
           <p>This content is only visible after completing onboarding.</p>
+        </div>
+        
+        <div className="bg-white rounded-lg shadow p-6">
+          <h2 className="text-xl font-semibold mb-4">Database Status</h2>
+          <D1Status />
         </div>
       </main>
     </div>
