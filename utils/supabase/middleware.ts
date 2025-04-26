@@ -48,11 +48,17 @@ export const updateSession = async (request: NextRequest) => {
       },
     );
 
-    // Refresh session using the recommended pattern
-    await supabase.auth.getSession();
+    // IMPORTANT: DO NOT add code between createServerClient and getSession
+    // This ensures proper session management and token refresh
+    const { data: { session } } = await supabase.auth.getSession();
 
-    // Get user data after session refresh
+    // IMPORTANT: After getSession, we now get the user
     const { data: { user }, error } = await supabase.auth.getUser();
+
+    // Debug information to help diagnose authentication issues
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`Path: ${request.nextUrl.pathname}, User: ${user ? 'Authenticated' : 'Not authenticated'}`);
+    }
 
     // Log attempted access to protected routes by unauthenticated users
     if (request.nextUrl.pathname.startsWith("/protected") && (!user || error)) {
@@ -60,6 +66,7 @@ export const updateSession = async (request: NextRequest) => {
       return NextResponse.redirect(new URL("/sign-in", request.url));
     }
 
+    // Redirect authenticated users to protected area when accessing the homepage
     if (request.nextUrl.pathname === "/" && user && !error) {
       return NextResponse.redirect(new URL("/protected", request.url));
     }
