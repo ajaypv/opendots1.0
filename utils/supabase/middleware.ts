@@ -66,6 +66,32 @@ export const updateSession = async (request: NextRequest) => {
       return NextResponse.redirect(new URL("/sign-in", request.url));
     }
 
+    // Check if user needs to complete onboarding
+    if (user && !error && !request.nextUrl.pathname.startsWith("/onboarding")) {
+      // Skip onboarding check for auth callback, api routes, etc.
+      const skipOnboardingCheck = 
+        request.nextUrl.pathname.startsWith("/auth") || 
+        request.nextUrl.pathname.startsWith("/api") ||
+        request.nextUrl.pathname === "/sign-in" ||
+        request.nextUrl.pathname === "/sign-out";
+      
+      if (!skipOnboardingCheck) {
+        // Check if user has completed onboarding
+        const { data, error: profileError } = await supabase
+          .from('user_profiles')
+          .select('id')
+          .eq('user_id', user.id)
+          .maybeSingle();
+        
+        const hasCompletedOnboarding = !!data;
+        
+        // Redirect to onboarding if not completed
+        if (!hasCompletedOnboarding && !profileError) {
+          return NextResponse.redirect(new URL("/onboarding", request.url));
+        }
+      }
+    }
+
     // Redirect authenticated users to protected area when accessing the homepage
     if (request.nextUrl.pathname === "/" && user && !error) {
       return NextResponse.redirect(new URL("/protected", request.url));

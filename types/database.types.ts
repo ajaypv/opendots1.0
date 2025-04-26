@@ -47,6 +47,37 @@ export interface Database {
           browser?: string | null
         }
       }
+      user_profiles: {
+        Row: {
+          id: string
+          user_id: string
+          username: string
+          display_name: string
+          age: number | null
+          gender: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          username: string
+          display_name: string
+          age?: number | null
+          gender?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          display_name?: string
+          age?: number | null
+          gender?: string | null
+          updated_at?: string
+          // Note: username is not included here since it can't be updated
+        }
+      }
       // Add other tables as needed
     }
     Views: {
@@ -65,6 +96,12 @@ export interface Database {
       populate_missing_profiles: {
         Args: Record<string, never>;
         Returns: void;
+      };
+      is_username_available: {
+        Args: {
+          username_to_check: string;
+        };
+        Returns: boolean;
       };
     }
     Enums: {

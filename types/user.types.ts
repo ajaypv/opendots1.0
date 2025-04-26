@@ -123,3 +123,27 @@ export type UserProfile = {
   created_at: string;
   updated_at: string;
 }; 
+
+/**
+ * Represents the extended user profile data collected during onboarding
+ */
+export type OnboardingProfile = {
+  id: string;
+  user_id: string;
+  username: string;
+  display_name: string;
+  age: number | null;
+  gender: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+/**
+ * Input type for onboarding form
+ */
+export type OnboardingFormData = {
+  username: string;
+  display_name: string;
+  age?: number | null;
+  gender?: string | null;
+}; 
