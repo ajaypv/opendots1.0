@@ -4,18 +4,17 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "deploy": "opennextjs-cloudflare build && wrangler deploy",
-    "d1:create": "wrangler d1 create user_profiles",
-    "d1:migrate:local": "node scripts/migrate-d1.js --local",
-    "d1:migrate:remote": "node scripts/migrate-d1.js",
-    "d1:studio": "wrangler d1 execute user_profiles --local --command \"SELECT name FROM sqlite_master WHERE type='table';\""
+    "deploy": "opennextjs-cloudflare build && wrangler deploy"
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.0.4",
     "@radix-ui/react-checkbox": "^1.1.1",
+    "@radix-ui/react-dialog": "^1.1.11",
     "@radix-ui/react-dropdown-menu": "^2.1.1",
     "@radix-ui/react-label": "^2.1.0",
+    "@radix-ui/react-select": "^2.2.2",
     "@radix-ui/react-slot": "^1.1.0",
+    "@radix-ui/react-tabs": "^1.1.9",
     "@supabase/ssr": "latest",
     "@supabase/supabase-js": "latest",
     "autoprefixer": "10.4.20",

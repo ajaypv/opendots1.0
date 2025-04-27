@@ -34,16 +34,7 @@ export async function middleware(request: NextRequest) {
   }
   
   // Continue with default session handling
-  const response = await updateSession(request);
-  
-  // Add diagnostic header for D1 presence on Cloudflare Worker
-  if (typeof globalThis !== 'undefined' && typeof (globalThis as any).DB !== 'undefined') {
-    response.headers.set('X-D1-Available', 'true');
-  } else {
-    response.headers.set('X-D1-Available', 'false');
-  }
-  
-  return response;
+  return updateSession(request);
 }
 
 export const config = {

@@ -8,12 +8,6 @@
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS"
-  },
-  "d1_databases": [
-    {
-      "binding": "DB",
-      "database_name": "user_profiles",
-      "database_id": "a366753f-39c0-4439-ba78-f5847a0f850e"
-    }
-  ]
+  }
+  
 }
